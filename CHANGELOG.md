@@ -8,3 +8,14 @@ Do not edit the entries by hand — write good commit messages instead. The
 comment below marks where new releases are inserted; keep it in place.
 
 <!-- releases -->
+
+## [0.1.0](https://github.com/braydevkin/ai-quizz-fullstack-test/releases/tag/v0.1.0) — 2026-07-23
+
+### Features
+
+- initial setup ([`8efdfed`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/8efdfed2b9a5665220f9780be38695e90e314060))
+
+### Other changes
+
+- setup ([`99a4c87`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/99a4c875c4f75d11bdc8b7d9a6dc3228682c2559))
+- First Commit ([`bd6d88c`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/bd6d88c40c87b7d32871fac121ef02273172fdc4))
