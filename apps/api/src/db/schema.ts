@@ -37,9 +37,21 @@ export interface QuestionTable {
   explanation: string
 }
 
+/** Added by `20260724000000_create_app_user_table`. */
+export interface AppUserTable {
+  /** Generated key — `gen_random_uuid()` fills it when a row omits it. */
+  id: Generated<string>
+  /** Unique; the service lowercases before writing, so lookups are canonical. */
+  email: string
+  name: string
+  created_at: Generated<Date>
+  updated_at: Generated<Date>
+}
+
 export interface Database {
   quiz: QuizTable
   question: QuestionTable
+  app_user: AppUserTable
 }
 
 export type QuizRow = Selectable<QuizTable>
@@ -48,3 +60,7 @@ export type QuizRowUpdate = Updateable<QuizTable>
 
 export type QuestionRow = Selectable<QuestionTable>
 export type NewQuestionRow = Insertable<QuestionTable>
+
+export type AppUserRow = Selectable<AppUserTable>
+export type NewAppUserRow = Insertable<AppUserTable>
+export type AppUserRowUpdate = Updateable<AppUserTable>

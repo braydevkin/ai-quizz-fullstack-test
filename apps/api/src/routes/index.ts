@@ -1,6 +1,7 @@
 import type { Express } from 'express'
 
 import { quizRouter } from '../modules/quiz/quiz.routes.js'
+import { userRouter } from '../modules/user/user.routes.js'
 import { healthRouter } from './health.route.js'
 
 /**
@@ -12,4 +13,5 @@ import { healthRouter } from './health.route.js'
 export function registerRoutes(app: Express): void {
   app.use('/', healthRouter)
   app.use('/quizzes', quizRouter)
+  app.use('/users', userRouter)
 }
