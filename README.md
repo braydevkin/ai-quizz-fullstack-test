@@ -254,6 +254,58 @@ never picked up.
 
 ---
 
+## Continuous integration and releases
+
+Two workflows, shaped around the branch model — feature branch → `develop` → `main`.
+
+| Workflow                                    | Runs on                                                     | Does                                                                                                       |
+| ------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `CI` — `.github/workflows/ci.yml`           | pull requests into `develop` or `main`, pushes to `develop` | Commitlint (pull requests only), `format:check`, `lint`, `typecheck`, `test:coverage`, `build`, Playwright |
+| `Release` — `.github/workflows/release.yml` | pushes to `main`, i.e. `develop` merged in                  | runs `CI` first, then versions, tags and publishes the release                                             |
+
+`CI` is also a reusable workflow (`workflow_call`) and `Release` calls it, so
+nothing is ever released without passing exactly the checks a pull request
+gets. Its verification steps carry `if: !cancelled()`: one red step still
+reports the others instead of hiding them behind the first failure. Coverage
+and the Playwright report are uploaded as artifacts.
+
+### How the version is chosen
+
+`Release` reads the Conventional Commits added since the last `v*` tag:
+
+| Commits in the range          | Bump                                     |
+| ----------------------------- | ---------------------------------------- |
+| `feat!:` / `BREAKING CHANGE:` | major — minor while the version is `0.x` |
+| `feat:`                       | minor                                    |
+| anything else                 | patch                                    |
+
+Every merge into `main` therefore produces a release, a docs-only one included.
+The first release publishes the version `package.json` already declares rather
+than bumping it.
+
+The job then makes one commit — `chore(repo): release vX.Y.Z [skip ci]` — that:
+
+1. sets the new version on the root and on every workspace `package.json`,
+2. prepends the grouped notes to `CHANGELOG.md`,
+3. runs Prettier over both, so the commit meets the same bar as a handwritten one,
+4. tags `vX.Y.Z`, pushes it and publishes a GitHub release carrying those notes,
+5. fast-forwards `develop` so it picks the bump up too — a warning, not a
+   failure, when `develop` has already moved on.
+
+The logic sits in three small scripts under `.github/scripts/`
+(`release-version.sh`, `release-notes.sh`, `changelog-update.sh`) instead of a
+release toolchain, so the dependency set is unchanged.
+
+### Repository settings this expects
+
+- **Settings → Actions → General → Workflow permissions** set to
+  _Read and write_, so the release job's `contents: write` can push the commit
+  and the tag.
+- If `main` is a protected branch, `github-actions[bot]` needs permission to
+  push to it — otherwise the release commit is rejected and no release is cut.
+
+---
+
 ## Environment variables
 
 Copy `.env.example` to `.env` at the repository root — it is read by the API in

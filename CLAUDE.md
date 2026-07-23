@@ -170,6 +170,33 @@ packages/config/jest/react.mjs   jsdom options merged into next/jest (apps/web)
   Testing Library + jsdom; `jest.setup.ts` pulls in `@testing-library/jest-dom`.
   Globals are injected there, so no `@jest/globals` imports.
 
+## CI and releases
+
+Two GitHub Actions workflows follow the branch model — feature branch →
+`develop` → `main`.
+
+- **`.github/workflows/ci.yml`** runs on pull requests into `develop`/`main`
+  and on pushes to `develop`: Commitlint over the pull request range,
+  `format:check`, `lint`, `typecheck`, `test:coverage`, `build`, then Playwright
+  in a separate job. It also declares `workflow_call`, so it is reusable.
+- **`.github/workflows/release.yml`** runs on pushes to `main`. It calls `ci.yml`
+  first, then derives the next version from the Conventional Commits since the
+  last `v*` tag (breaking → major, `feat` → minor, anything else → patch;
+  breaking stays a minor while the version is `0.x`), bumps every
+  `package.json`, prepends to `CHANGELOG.md`, tags and publishes the release,
+  and fast-forwards `develop`.
+- **The version logic is three shell scripts** in `.github/scripts/`
+  (`release-version.sh`, `release-notes.sh`, `changelog-update.sh`), not a
+  release dependency — keep it that way, and keep them executable.
+- **`.github/actions/setup`** is the composite action every job starts with
+  (pnpm from `packageManager`, Node from `.nvmrc`, cached install). Add a job by
+  reusing it, not by repeating the three steps.
+- **`CHANGELOG.md` is generated.** Never edit released entries by hand, and keep
+  the `<!-- releases -->` anchor — the release script inserts below it.
+- **The release commit is `chore(repo): release vX.Y.Z [skip ci]`.** Both the
+  `[skip ci]` marker and the `if:` guard on the release job exist to stop it
+  from releasing itself; changing that message means changing the guard.
+
 ## Commands
 
 ```bash
