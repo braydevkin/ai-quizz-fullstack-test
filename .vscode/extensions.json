@@ -1,0 +1,13 @@
+{
+  // This project lives on the WSL filesystem and its node_modules is built from
+  // pnpm symlinks, which Windows cannot follow over \\wsl.localhost. Open the
+  // folder through the WSL extension (`code .` from a WSL shell) or the editor
+  // will report every dependency as missing.
+  "recommendations": [
+    "ms-vscode-remote.remote-wsl",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "editorconfig.editorconfig"
+  ]
+}

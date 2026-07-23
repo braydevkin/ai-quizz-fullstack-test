@@ -1,0 +1,4 @@
+# git runs hooks from the repo root; commitlint must run from the project root
+case "$1" in /*) msg="$1" ;; *) msg="$PWD/$1" ;; esac
+cd "$(dirname -- "$0")/.."
+pnpm exec commitlint --edit "$msg"

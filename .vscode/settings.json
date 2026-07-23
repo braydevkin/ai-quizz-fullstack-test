@@ -1,0 +1,16 @@
+{
+  // Use the workspace's TypeScript (5.9.3) instead of the editor's bundled copy,
+  // so `extends: "@quiz/config/tsconfig/node.json"` resolves in the editor
+  // exactly as it does for `pnpm typecheck`.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+
+  // Prettier owns formatting; ESLint never reports formatting problems.
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+
+  // One ESLint flat config per workspace, resolved from the file being linted.
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  "files.eol": "\n"
+}

@@ -1,0 +1,7 @@
+# Kysely migrations live here, one file per migration, named so they sort
+# chronologically: `20260723T1200_create_quiz.ts`.
+#
+# Each file exports `up(db: Kysely<any>)` and `down(db: Kysely<any>)` and is
+# picked up automatically by `FileMigrationProvider` — see ../migrate.ts.
+#
+# Empty during the infrastructure phase.

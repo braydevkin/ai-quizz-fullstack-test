@@ -1,0 +1,27 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# pnpm >= 10 blocks dependency lifecycle scripts by default. These packages
+# legitimately need theirs (native binaries).
+allowBuilds:
+  '@tailwindcss/oxide': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+
+# Versions pinned in package.json that are newer than pnpm's default
+# minimum-release-age gate. Managed by pnpm; safe to prune when bumping deps.
+minimumReleaseAgeExclude:
+  - '@radix-ui/primitive@1.1.7'
+  - '@radix-ui/react-compose-refs@1.1.4'
+  - '@radix-ui/react-slot@1.3.1'
+  - '@turbo/darwin-64@2.10.6'
+  - '@turbo/darwin-arm64@2.10.6'
+  - '@turbo/linux-64@2.10.6'
+  - '@turbo/linux-arm64@2.10.6'
+  - '@turbo/windows-64@2.10.6'
+  - '@turbo/windows-arm64@2.10.6'
+  - lint-staged@17.2.0
+  - lucide-react@1.26.0
+  - turbo@2.10.6
