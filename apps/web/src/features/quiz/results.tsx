@@ -126,9 +126,12 @@ function SaveStatus({ quizId, answerInputs }: { quizId: string; answerInputs: An
 
   if (state === 'saved') {
     return (
-      <p className="inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400">
+      <p className="inline-flex flex-wrap items-center justify-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400">
         <CircleCheck className="size-4" />
         Score saved to your history.
+        <Link href="/dashboard" className="text-primary underline underline-offset-4">
+          View dashboard
+        </Link>
       </p>
     )
   }

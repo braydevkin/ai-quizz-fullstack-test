@@ -1,24 +1,29 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('home page', () => {
-  test('renders the landing content', async ({ page }) => {
+  test('renders the landing hero', async ({ page }) => {
+    await page.route('**/quizzes', (route) => route.fulfill({ json: [] }))
+
     await page.goto('/')
 
-    await expect(page.getByRole('heading', { name: 'AI Development Quiz App' })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Test your AI development knowledge' }),
+    ).toBeVisible()
   })
 
-  test('reports the API status once the check resolves', async ({ page }) => {
-    await page.route('**/', async (route, request) => {
-      if (request.url().includes(':3333')) {
-        await route.fulfill({ json: { status: 'ok' } })
-        return
-      }
-
-      await route.fallback()
-    })
+  test('lists the quiz catalogue and links into a quiz', async ({ page }) => {
+    await page.route('**/quizzes', (route) =>
+      route.fulfill({
+        json: [{ id: 'demo', title: 'Demo Quiz', description: 'A short demo', questionCount: 2 }],
+      }),
+    )
 
     await page.goto('/')
 
-    await expect(page.getByText('API is up')).toBeVisible()
+    await expect(page.getByText('Demo Quiz')).toBeVisible()
+    await expect(page.getByRole('link', { name: /Start quiz/ })).toHaveAttribute(
+      'href',
+      '/quiz/demo',
+    )
   })
 })
