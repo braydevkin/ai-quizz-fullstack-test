@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // No `@types/jest` on purpose: under native ESM the `jest`/`describe`/
+    // `expect` globals are not injected, so tests import them from
+    // `@jest/globals`, which is typed by the package itself. Adding the
+    // ambient types on top would double-declare every matcher.
+    "types": ["node"],
+    // Widened from `src` because `jest.setup.ts` sits at the workspace root.
+    // Harmless: nothing is emitted from this project.
+    "rootDir": ".",
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo.test"
+  },
+  "include": ["src/**/*.ts", "jest.setup.ts"],
+  "exclude": ["node_modules", "dist"]
+}

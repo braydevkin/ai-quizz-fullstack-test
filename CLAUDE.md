@@ -23,9 +23,13 @@ work has **not** started.
 
 Do **not** create, unless explicitly asked: business rules, entities
 (Quiz/Question/User/Attempt/…), authentication, use cases, domain controllers,
-DTOs, database migrations, or tests. `src/db/schema.ts` declares an empty
-`Database` interface and `src/db/migrations/` is empty; `apps/web` serves one
-"it works" page; `apps/api` exposes one route.
+DTOs, or database migrations. `src/db/schema.ts` declares an empty `Database`
+interface and `src/db/migrations/` is empty; `apps/web` serves one "it works"
+page; `apps/api` exposes one route.
+
+The test harness (Jest + Playwright) **is** in place — see [Testing](#testing).
+Its existing suites cover infrastructure only; don't write domain tests for
+features that don't exist yet.
 
 ## Product scope (later phases — do not build yet)
 
@@ -125,9 +129,73 @@ selector, `@custom-variant dark` in `globals.css`). shadcn config lives in
   variables to `.env.example`, to `apps/api/src/lib/env.ts` (or
   `apps/web/src/lib/env.ts`), to `turbo.json`'s `build.env`, and to
   `docker-compose.yml`.
+- **Credentials never get a default.** Secrets are declared required in
+  `docker-compose.yml` (`${POSTGRES_USER:?…}`) so compose fails fast rather than
+  booting a well-known user/password; the API container's `DATABASE_URL` is
+  interpolated from those same variables, keeping one source of truth. Values in
+  `.env.example` are local-development scaffolding only.
 - **Conventional Commits**, enforced by Commitlint on `commit-msg`. Scopes:
   `api`, `web`, `shared`, `config`, `docker`, `repo`, `deps`, `ci`.
   Husky's `pre-commit` runs `lint-staged` (Prettier on staged files).
+
+## Testing
+
+Jest for unit tests in every workspace; Playwright for integration tests, in
+`apps/web` only. The backend is deliberately unit-tested only — no supertest, no
+HTTP-level suites.
+
+```
+packages/config/jest/base.mjs    options every project shares
+packages/config/jest/node.mjs    ts-jest ESM preset (apps/api, packages/shared)
+packages/config/jest/react.mjs   jsdom options merged into next/jest (apps/web)
+```
+
+- **Unit tests are colocated**: `src/**/*.test.ts(x)`, next to the code they
+  cover. `testMatch` is scoped to `src`, so Playwright's specs never leak in.
+- **Playwright lives in `apps/web/e2e/*.spec.ts`** and is never run by
+  `pnpm test`. Its `webServer` reuses an already-running `pnpm dev`; browsers
+  need `pnpm test:e2e:install` once.
+- **`apps/api` runs native ESM**, so Jest needs
+  `NODE_OPTIONS=--experimental-vm-modules` (already in its `test` script) and
+  test files import `describe`/`it`/`expect`/`jest` from `@jest/globals` — those
+  globals are not injected under ESM. `@types/jest` is therefore _not_ installed
+  there; adding it would double-declare every matcher.
+- **`apps/api/tsconfig.json` excludes `*.test.ts`** so tests stay out of `dist`;
+  `tsconfig.test.json` type checks them and is what `pnpm typecheck` runs.
+- **`apps/api/jest.setup.ts` assigns the test env vars** (`NODE_ENV`,
+  `DATABASE_URL`, …) before any module loads, because `lib/env.ts` validates at
+  import time. It never reads the developer's `.env`, so a real database can't
+  be reached from a test.
+- **`apps/web` uses `next/jest`** (SWC transform, `@/*` alias, CSS stubs) with
+  Testing Library + jsdom; `jest.setup.ts` pulls in `@testing-library/jest-dom`.
+  Globals are injected there, so no `@jest/globals` imports.
+
+## CI and releases
+
+Two GitHub Actions workflows follow the branch model — feature branch →
+`develop` → `main`.
+
+- **`.github/workflows/ci.yml`** runs on pull requests into `develop`/`main`
+  and on pushes to `develop`: Commitlint over the pull request range,
+  `format:check`, `lint`, `typecheck`, `test:coverage`, `build`, then Playwright
+  in a separate job. It also declares `workflow_call`, so it is reusable.
+- **`.github/workflows/release.yml`** runs on pushes to `main`. It calls `ci.yml`
+  first, then derives the next version from the Conventional Commits since the
+  last `v*` tag (breaking → major, `feat` → minor, anything else → patch;
+  breaking stays a minor while the version is `0.x`), bumps every
+  `package.json`, prepends to `CHANGELOG.md`, tags and publishes the release,
+  and fast-forwards `develop`.
+- **The version logic is three shell scripts** in `.github/scripts/`
+  (`release-version.sh`, `release-notes.sh`, `changelog-update.sh`), not a
+  release dependency — keep it that way, and keep them executable.
+- **`.github/actions/setup`** is the composite action every job starts with
+  (pnpm from `packageManager`, Node from `.nvmrc`, cached install). Add a job by
+  reusing it, not by repeating the three steps.
+- **`CHANGELOG.md` is generated.** Never edit released entries by hand, and keep
+  the `<!-- releases -->` anchor — the release script inserts below it.
+- **The release commit is `chore(repo): release vX.Y.Z [skip ci]`.** Both the
+  `[skip ci]` marker and the `if:` guard on the release job exist to stop it
+  from releasing itself; changing that message means changing the guard.
 
 ## Commands
 
@@ -140,6 +208,12 @@ pnpm --filter @quiz/api dev     # single workspace
 pnpm db:migrate | db:migrate:up | db:migrate:down   # Kysely migrations
 docker compose up               # postgres + api + web
 docker compose up -d postgres   # just the database, for local dev
+
+pnpm test                       # turbo: Jest unit tests in every workspace
+pnpm test:coverage              # same, with coverage reports
+pnpm --filter @quiz/web test:watch
+pnpm test:e2e:install           # one-off: download the Playwright browsers
+pnpm test:e2e | test:e2e:ui     # Playwright integration tests (web only)
 ```
 
 Before calling work done, run `pnpm lint` and `pnpm typecheck` (and `pnpm build`

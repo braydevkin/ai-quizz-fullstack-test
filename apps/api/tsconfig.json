@@ -6,5 +6,7 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  // Tests are colocated with the code they cover; `tsconfig.test.json` type
+  // checks them, but they must never reach `dist/`.
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/**/__mocks__/**"]
 }

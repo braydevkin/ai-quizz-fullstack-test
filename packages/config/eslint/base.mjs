@@ -17,6 +17,8 @@ export const baseConfig = [
       '**/.next/**',
       '**/.turbo/**',
       '**/coverage/**',
+      '**/playwright-report/**',
+      '**/test-results/**',
       '**/generated/**',
       '**/next-env.d.ts',
     ],

@@ -25,8 +25,14 @@ next-env.d.ts
 npm-debug.log*
 pnpm-debug.log*
 
-# coverage / caches
+# tests
 coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# caches
 .cache/
 .eslintcache
 
@@ -37,3 +43,4 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+.env
