@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import type { ReactNode } from 'react'
 
+import { SiteHeader } from '@/components/site-header'
 import { ThemeProvider } from '@/components/theme-provider'
+import { UserProvider } from '@/features/identity/user-context'
 import '@/styles/globals.css'
 
 const fontSans = Inter({
@@ -35,7 +37,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <UserProvider>
+            <SiteHeader />
+            {children}
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>
