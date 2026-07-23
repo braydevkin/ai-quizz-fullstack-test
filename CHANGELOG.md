@@ -9,6 +9,30 @@ comment below marks where new releases are inserted; keep it in place.
 
 <!-- releases -->
 
+## [0.2.0](https://github.com/braydevkin/ai-quizz-fullstack-test/releases/tag/v0.2.0) — 2026-07-23
+
+### Features
+
+- **web:** add progress dashboard, attempt history and review ([`f100cd1`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/f100cd1c7608ae5118c514f2a7b1d315dace4261))
+- **web:** add landing page and quiz-taking flow ([`d3f46d3`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/d3f46d3ace2de7ac113cf589aec9c2cf2356d7fb))
+- **api:** add attempt endpoints with server-side grading ([`bb84459`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/bb84459954145f1ee1ac90103efb0cde2b11a104))
+- **shared:** add attempt contracts and performance tiers ([`0078c7d`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/0078c7dcbd32389282b7b37b4f7aac53fbf48443))
+- **web:** add sign-in flow and shared site header ([`00f1596`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/00f159646e6cf280778e1396216547db1e1278f3))
+- **api:** add passwordless user identity endpoints ([`42c97f1`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/42c97f1a30e673dcb73c76b183ee2f8fed39fdd3))
+- **shared:** add user identity contracts ([`b628334`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/b628334802bd5c3a662a76127e31728b1702aca4))
+- adding quiz crud and db seed to populate database data ([`b9f8f6b`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/b9f8f6bafbb263b46c5264ad3b5e6cfd2add4613))
+- adding quiz and question domain ([`53925e7`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/53925e705e37a1419e0eb05a0a1dd892713eabac))
+
+### Documentation
+
+- **repo:** add application screenshots ([`a12bf71`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/a12bf71d311dad69292f1e05652ac1436687c8c8))
+
+### Tests
+
+- **web:** fix quiz-flow e2e start-screen selector ([`ffa3287`](https://github.com/braydevkin/ai-quizz-fullstack-test/commit/ffa32877bea509e3cd6f2020cecfb35bd8252910))
+
+**Full changelog**: https://github.com/braydevkin/ai-quizz-fullstack-test/compare/v0.1.0...v0.2.0
+
 ## [0.1.0](https://github.com/braydevkin/ai-quizz-fullstack-test/releases/tag/v0.1.0) — 2026-07-23
 
 ### Features
