@@ -1,0 +1,67 @@
+{
+  "id": "prompt-engineering",
+  "title": "Prompt Engineering",
+  "description": "Test your knowledge of designing effective prompts for large language models",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is 'few-shot prompting'?",
+      "options": [
+        "Prompting the model as few times as possible to save cost",
+        "Including a small number of worked examples in the prompt to guide the model",
+        "Sending prompts in short bursts to avoid rate limits",
+        "Using the shortest possible wording for every instruction"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Few-shot prompting supplies a handful of input/output examples so the model can infer the pattern you want it to follow."
+    },
+    {
+      "id": 2,
+      "question": "Why does 'chain-of-thought' prompting often improve answers on reasoning tasks?",
+      "options": [
+        "It encrypts the prompt so the model pays more attention",
+        "It asks the model to work through intermediate steps before answering",
+        "It chains several models together in sequence",
+        "It reduces the size of the context window"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Asking the model to reason step by step gives it room to break a problem into intermediate steps, which improves accuracy on multi-step reasoning."
+    },
+    {
+      "id": 3,
+      "question": "What is the main purpose of a 'system prompt'?",
+      "options": [
+        "To store the conversation history on disk",
+        "To set the model's persistent role, tone and constraints for the conversation",
+        "To restart the model when it crashes",
+        "To translate the user's language automatically"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A system prompt establishes high-level instructions — role, tone, rules — that shape how the model responds throughout the conversation."
+    },
+    {
+      "id": 4,
+      "question": "Which technique most directly reduces ambiguity in a prompt?",
+      "options": [
+        "Raising the temperature setting",
+        "Giving explicit, specific instructions and a desired output format",
+        "Making the prompt as short as possible",
+        "Repeating the same word many times"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Clear, specific instructions and an explicit output format leave the model less room to guess, producing more predictable results."
+    },
+    {
+      "id": 5,
+      "question": "What does raising the 'temperature' parameter typically do?",
+      "options": [
+        "Makes responses more random and varied",
+        "Makes responses more deterministic and focused",
+        "Increases the context window size",
+        "Speeds up token generation"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Higher temperature increases randomness in token selection, yielding more diverse (and less predictable) output; lower temperature makes it more focused."
+    }
+  ]
+}

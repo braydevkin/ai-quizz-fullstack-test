@@ -1,0 +1,67 @@
+{
+  "id": "rag-and-retrieval",
+  "title": "RAG and Retrieval",
+  "description": "Test your knowledge of retrieval-augmented generation and vector search",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What problem does Retrieval-Augmented Generation (RAG) primarily address?",
+      "options": [
+        "Grounding responses in external, up-to-date or private knowledge the model wasn't trained on",
+        "Making the model generate images",
+        "Reducing the number of GPUs needed to train a model",
+        "Translating between programming languages"
+      ],
+      "correctAnswer": 0,
+      "explanation": "RAG retrieves relevant documents at query time and adds them to the prompt, letting the model answer from sources beyond its training data."
+    },
+    {
+      "id": 2,
+      "question": "What is an 'embedding' in the context of retrieval?",
+      "options": [
+        "A numeric vector that represents the meaning of a piece of text",
+        "A compressed image file",
+        "A cached copy of the model weights",
+        "A type of API authentication token"
+      ],
+      "correctAnswer": 0,
+      "explanation": "An embedding maps text to a vector so that semantically similar texts land close together, enabling similarity search."
+    },
+    {
+      "id": 3,
+      "question": "What does a vector database do in a RAG pipeline?",
+      "options": [
+        "Stores embeddings and finds the most similar ones to a query vector",
+        "Renders the final HTML page",
+        "Fine-tunes the language model on a schedule",
+        "Manages user passwords"
+      ],
+      "correctAnswer": 0,
+      "explanation": "A vector database indexes embeddings and performs nearest-neighbour search to return the passages most semantically relevant to the query."
+    },
+    {
+      "id": 4,
+      "question": "Why is document 'chunking' important before indexing for retrieval?",
+      "options": [
+        "Splitting long documents into passages improves retrieval precision and fits context limits",
+        "It permanently deletes duplicate documents",
+        "It converts text to audio",
+        "It encrypts the documents"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Breaking documents into focused chunks means retrieval returns the specific relevant passage rather than a whole document, and each chunk fits the context window."
+    },
+    {
+      "id": 5,
+      "question": "How does RAG help reduce hallucinations?",
+      "options": [
+        "By grounding the answer in retrieved source text the model can cite",
+        "By raising the temperature to maximum",
+        "By removing the system prompt",
+        "By shortening the user's question"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Providing authoritative retrieved context gives the model facts to rely on and cite, reducing the chance it fabricates an answer."
+    }
+  ]
+}

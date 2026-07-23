@@ -1,0 +1,67 @@
+{
+  "id": "model-selection",
+  "title": "Model Selection",
+  "description": "Test your knowledge of choosing the right AI model for a task",
+  "questions": [
+    {
+      "id": 1,
+      "question": "When is a smaller, faster model usually the better choice over a larger one?",
+      "options": [
+        "For high-volume, latency-sensitive tasks with simple requirements",
+        "Only when no larger model is available",
+        "For the most complex reasoning problems",
+        "Never — larger is always better"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Smaller models cost less and respond faster, making them a strong fit for high-throughput, latency-sensitive tasks that don't need deep reasoning."
+    },
+    {
+      "id": 2,
+      "question": "What does a model's 'context window' limit?",
+      "options": [
+        "How many users can call it at once",
+        "The total tokens of input plus output it can handle in one request",
+        "How many languages it understands",
+        "The number of parameters it was trained with"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The context window caps how much text — prompt plus generated output — the model can process in a single request."
+    },
+    {
+      "id": 3,
+      "question": "Which factor is most relevant when a task requires up-to-date factual knowledge?",
+      "options": [
+        "The model's training-data cutoff date, or whether it can retrieve external data",
+        "The colour of the API dashboard",
+        "The model's maximum temperature setting",
+        "The programming language of the client"
+      ],
+      "correctAnswer": 0,
+      "explanation": "A model only knows what it was trained on up to its cutoff; for fresh facts you need a recent model or a retrieval/tool step that supplies current data."
+    },
+    {
+      "id": 4,
+      "question": "Why might you evaluate several models on your own test set before committing?",
+      "options": [
+        "Benchmarks rarely reflect performance on your specific task and data",
+        "It is required by law",
+        "It permanently fine-tunes the models",
+        "It lowers the price of every model"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Public benchmarks are generic; measuring candidates against your own representative examples reveals which one actually performs best for your use case."
+    },
+    {
+      "id": 5,
+      "question": "What is a common trade-off when moving to a more capable model?",
+      "options": [
+        "Higher accuracy but greater cost and latency",
+        "Lower accuracy but higher cost",
+        "No change to cost or speed",
+        "Smaller context windows"
+      ],
+      "correctAnswer": 0,
+      "explanation": "More capable models typically deliver better quality but cost more per token and respond more slowly, so the choice balances quality against budget and speed."
+    }
+  ]
+}

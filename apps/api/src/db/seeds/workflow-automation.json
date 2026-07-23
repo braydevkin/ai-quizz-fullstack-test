@@ -1,0 +1,67 @@
+{
+  "id": "workflow-automation",
+  "title": "Workflow Automation",
+  "description": "Test your knowledge of automating tasks with AI-driven workflows",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is 'tool use' (function calling) in an AI workflow?",
+      "options": [
+        "The model letting an application run predefined functions on its behalf",
+        "A way to physically build hardware tools",
+        "Manually copying model output into a spreadsheet",
+        "Restarting the model between steps"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Tool use lets the model request that the surrounding application call defined functions — search, calculators, APIs — and feed the results back into the conversation."
+    },
+    {
+      "id": 2,
+      "question": "Why is a 'human-in-the-loop' checkpoint valuable in an automated workflow?",
+      "options": [
+        "It lets a person review or approve high-stakes actions before they execute",
+        "It makes the workflow run faster",
+        "It removes the need for any testing",
+        "It hides errors from the user"
+      ],
+      "correctAnswer": 0,
+      "explanation": "A human checkpoint catches mistakes and gives oversight on consequential or irreversible actions before the automation commits to them."
+    },
+    {
+      "id": 3,
+      "question": "What is 'orchestration' in a multi-step AI workflow?",
+      "options": [
+        "Coordinating the order, inputs and outputs of multiple steps or agents",
+        "Playing background music while the model runs",
+        "Compressing the model to a smaller size",
+        "Encrypting the API key"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Orchestration is the control layer that decides which steps run, in what order, and how each step's output feeds the next."
+    },
+    {
+      "id": 4,
+      "question": "Why should automated workflows handle model errors and retries explicitly?",
+      "options": [
+        "Model calls can fail or return malformed output, and unhandled failures break the pipeline",
+        "Retries make the model smarter over time",
+        "It is only needed for image models",
+        "Errors never happen in production"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Network issues, rate limits and malformed responses are normal; explicit error handling and retries keep the overall workflow reliable."
+    },
+    {
+      "id": 5,
+      "question": "What is 'idempotency' and why does it matter for automation?",
+      "options": [
+        "Running the same step twice produces the same result without duplicate side effects",
+        "The model forgets previous steps",
+        "Every step must run exactly once or the system crashes",
+        "It is a way to measure token cost"
+      ],
+      "correctAnswer": 0,
+      "explanation": "An idempotent step can be safely retried because repeating it doesn't create duplicate records or effects — essential when a workflow may re-run after a failure."
+    }
+  ]
+}

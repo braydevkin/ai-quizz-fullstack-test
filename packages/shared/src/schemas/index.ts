@@ -1,7 +1,7 @@
 /**
  * Shared zod schemas — a single source of truth for runtime validation on both
  * sides of the wire.
- *
- * Empty by design in the infrastructure phase.
  */
-export {}
+export * from './attempt.schema.js'
+export * from './quiz.schema.js'
+export * from './user.schema.js'

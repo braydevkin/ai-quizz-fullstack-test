@@ -1,6 +1,6 @@
 /**
  * Shared TypeScript types (contracts between the API and the web app).
- *
- * Empty by design in the infrastructure phase.
  */
-export {}
+export * from './attempt.types.js'
+export * from './quiz.types.js'
+export * from './user.types.js'
