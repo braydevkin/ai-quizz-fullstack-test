@@ -4,12 +4,13 @@ An educational quiz platform where users test and reinforce their knowledge of
 AI software development concepts — agent design, prompt engineering, model
 selection and workflow automation.
 
-> **Status: infrastructure phase.**
-> This repository currently contains the monorepo foundation only — no domain
-> logic, no quiz entities, no authentication. The test harness (Jest +
-> Playwright) is wired up, but only covers the infrastructure itself. The web
-> app serves a single "it works" page and the API exposes a single health
-> endpoint. Product features are built on top of this base in the next phase.
+> **Status: domain phase, in progress.**
+> The monorepo foundation is complete, and the first slice of domain logic has
+> landed: quiz content is persisted in PostgreSQL and the API exposes a full
+> CRUD surface at `/quizzes` (see [API](#api) below), seeded from JSON with
+> `pnpm db:seed`. There is no authentication yet, and the web app still serves a
+> single "it works" page — the quiz UI is the next slice. The test harness
+> (Jest + Playwright) is wired up and now covers the quiz module too.
 
 ---
 
@@ -87,11 +88,44 @@ The quickest way to get one is the compose service on its own:
 
 ```bash
 docker compose up -d postgres
-pnpm db:migrate         # apply pending migrations (none yet)
+pnpm db:migrate         # create the quiz + question tables
+pnpm db:seed            # load the starter quizzes from apps/api/src/db/seeds
 ```
 
 > The API boots without a live database — `pg` connects lazily — so the health
 > endpoint works even before Postgres is up.
+
+---
+
+## API
+
+`GET /` is the health endpoint (`{"status":"ok"}`). Quiz content is served under
+`/quizzes`:
+
+| Method   | Path           | Body                 | Success                 |
+| -------- | -------------- | -------------------- | ----------------------- |
+| `GET`    | `/quizzes`     | —                    | `200` quiz summaries    |
+| `GET`    | `/quizzes/:id` | —                    | `200` full quiz         |
+| `POST`   | `/quizzes`     | quiz without ids     | `201` quiz + `Location` |
+| `PUT`    | `/quizzes/:id` | full quiz            | `200` quiz (replaced)   |
+| `PATCH`  | `/quizzes/:id` | any subset of fields | `200` quiz (updated)    |
+| `DELETE` | `/quizzes/:id` | —                    | `204`                   |
+
+A quiz is `{ id, title, description, questions[] }`, each question
+`{ id, question, options[], correctAnswer, explanation }` where `correctAnswer`
+is the zero-based index into `options`. Payload ids are optional — the API
+derives a quiz id from the title (`Agent Fundamentals` → `agent-fundamentals`)
+and numbers questions `1..n` — and the shape is validated by the shared zod
+schemas in `@quiz/shared`. Errors come back as
+`{ statusCode, error, message, details? }`.
+
+Content is data-driven: drop a `*.json` quiz into `apps/api/src/db/seeds/` and
+`pnpm db:seed` upserts it — no code change, and re-running is idempotent.
+
+```bash
+curl http://localhost:3333/quizzes
+curl http://localhost:3333/quizzes/agent-fundamentals
+```
 
 ---
 
@@ -129,23 +163,24 @@ default), not the in-network `http://api:3333`.
 
 ### Root
 
-| Script                                                  | Description                                |
-| ------------------------------------------------------- | ------------------------------------------ |
-| `pnpm dev`                                              | Run every app in watch mode (Turborepo)    |
-| `pnpm build`                                            | Build every workspace in dependency order  |
-| `pnpm start`                                            | Run the production builds                  |
-| `pnpm lint`                                             | ESLint across all workspaces               |
-| `pnpm lint:fix`                                         | ESLint with `--fix`                        |
-| `pnpm typecheck`                                        | `tsc --noEmit` across all workspaces       |
-| `pnpm format`                                           | Prettier write                             |
-| `pnpm format:check`                                     | Prettier check (CI-friendly)               |
-| `pnpm clean`                                            | Remove build artefacts                     |
-| `pnpm test`                                             | Jest unit tests across all workspaces      |
-| `pnpm test:coverage`                                    | Unit tests with coverage reports           |
-| `pnpm test:e2e` / `test:e2e:ui`                         | Playwright integration tests (`@quiz/web`) |
-| `pnpm test:e2e:install`                                 | Download the Playwright browsers (once)    |
-| `pnpm db:migrate` / `db:migrate:up` / `db:migrate:down` | Kysely migrations for `@quiz/api`          |
-| `pnpm docker:up` / `docker:down` / `docker:reset`       | Compose shortcuts                          |
+| Script                                                  | Description                                 |
+| ------------------------------------------------------- | ------------------------------------------- |
+| `pnpm dev`                                              | Run every app in watch mode (Turborepo)     |
+| `pnpm build`                                            | Build every workspace in dependency order   |
+| `pnpm start`                                            | Run the production builds                   |
+| `pnpm lint`                                             | ESLint across all workspaces                |
+| `pnpm lint:fix`                                         | ESLint with `--fix`                         |
+| `pnpm typecheck`                                        | `tsc --noEmit` across all workspaces        |
+| `pnpm format`                                           | Prettier write                              |
+| `pnpm format:check`                                     | Prettier check (CI-friendly)                |
+| `pnpm clean`                                            | Remove build artefacts                      |
+| `pnpm test`                                             | Jest unit tests across all workspaces       |
+| `pnpm test:coverage`                                    | Unit tests with coverage reports            |
+| `pnpm test:e2e` / `test:e2e:ui`                         | Playwright integration tests (`@quiz/web`)  |
+| `pnpm test:e2e:install`                                 | Download the Playwright browsers (once)     |
+| `pnpm db:migrate` / `db:migrate:up` / `db:migrate:down` | Kysely migrations for `@quiz/api`           |
+| `pnpm db:seed`                                          | Load `apps/api/src/db/seeds/*.json` quizzes |
+| `pnpm docker:up` / `docker:down` / `docker:reset`       | Compose shortcuts                           |
 
 ### Per app (`apps/api`, `apps/web`)
 
@@ -353,9 +388,9 @@ manager), never in a file in the repository.
 
 The base is deliberately shaped so the product slots in without refactors:
 
-1. Quiz content tables in `apps/api/src/db/migrations`, typed in `src/db/schema.ts`,
-   contracts in `@quiz/shared`.
-2. `apps/api/src/modules/quiz` — routes, service, repository.
+1. ✅ Quiz content tables in `apps/api/src/db/migrations`, typed in
+   `src/db/schema.ts`, contracts in `@quiz/shared`.
+2. ✅ `apps/api/src/modules/quiz` — routes, service, repository.
 3. `apps/web/src/features/quiz` — category list, question flow, results.
 4. Attempt history and progress persistence.
 5. Stretch: profiles, dashboard, leaderboard, daily challenge, Learn Mode.

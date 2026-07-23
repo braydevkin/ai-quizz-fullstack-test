@@ -1,0 +1,67 @@
+{
+  "id": "llm-fundamentals",
+  "title": "LLM Fundamentals",
+  "description": "Test your knowledge of how large language models work",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is a 'token' in a large language model?",
+      "options": [
+        "A chunk of text — often a word or sub-word — that the model reads and generates",
+        "A security key used to log in",
+        "A single pixel in an image",
+        "A unit of GPU memory"
+      ],
+      "correctAnswer": 0,
+      "explanation": "LLMs process text as tokens (words or sub-word pieces); both input and output are measured in tokens."
+    },
+    {
+      "id": 2,
+      "question": "At its core, how does an LLM generate text?",
+      "options": [
+        "By predicting the next token repeatedly, one at a time",
+        "By copying the closest matching sentence from a database",
+        "By running a fixed set of if/else rules",
+        "By translating everything to English first"
+      ],
+      "correctAnswer": 0,
+      "explanation": "An LLM generates autoregressively: it predicts the most likely next token given everything so far, then repeats with that token appended."
+    },
+    {
+      "id": 3,
+      "question": "What is a 'hallucination' in the context of LLMs?",
+      "options": [
+        "The model producing confident output that is factually wrong or made up",
+        "The model refusing to answer",
+        "The model running out of memory",
+        "The model responding in the wrong language"
+      ],
+      "correctAnswer": 0,
+      "explanation": "A hallucination is fluent, confident-sounding output that is not grounded in fact — a known failure mode of generative models."
+    },
+    {
+      "id": 4,
+      "question": "What distinguishes 'fine-tuning' from 'prompting'?",
+      "options": [
+        "Fine-tuning updates the model's weights on new data; prompting only changes the input",
+        "They are two names for the same thing",
+        "Prompting permanently retrains the model",
+        "Fine-tuning is done by the end user at inference time"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Fine-tuning further trains the model on task-specific data, changing its parameters, whereas prompting leaves the model unchanged and only adjusts what you send it."
+    },
+    {
+      "id": 5,
+      "question": "What is the 'transformer' in modern LLMs?",
+      "options": [
+        "The neural network architecture, based on attention, that underpins most LLMs",
+        "A device that converts electrical voltage",
+        "A tool that transforms JSON into CSV",
+        "The part of the API that formats the response"
+      ],
+      "correctAnswer": 0,
+      "explanation": "The transformer is the attention-based neural architecture introduced in 2017 that powers today's large language models."
+    }
+  ]
+}

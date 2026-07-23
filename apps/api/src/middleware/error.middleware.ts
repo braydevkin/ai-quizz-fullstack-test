@@ -7,6 +7,8 @@ import { isProduction } from '../lib/env.js'
 interface HttpError extends Error {
   status?: number
   statusCode?: number
+  /** Machine-readable context, e.g. the zod issues behind a 400. */
+  details?: unknown
 }
 
 /**
@@ -36,5 +38,7 @@ export const errorHandler: ErrorRequestHandler = (error: HttpError, req, res, _n
     statusCode,
     error: STATUS_CODES[statusCode] ?? 'Error',
     message: statusCode >= 500 && isProduction ? 'Internal Server Error' : error.message,
+    // Only client errors carry details: a 500's internals stay server-side.
+    ...(error.details !== undefined && statusCode < 500 ? { details: error.details } : {}),
   })
 }

@@ -1,6 +1,6 @@
 /**
  * API-local helpers that are not worth sharing through `@quiz/shared`.
- *
- * Empty by design in the infrastructure phase.
  */
-export {}
+export * from './http-error.js'
+export * from './slug.js'
+export * from './validation.js'

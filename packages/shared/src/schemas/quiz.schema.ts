@@ -143,6 +143,19 @@ export const createQuizSchema = z
   .refine(hasDistinctQuestionIds, hasDistinctQuestionIdsIssue)
 
 /**
+ * Replace payload — the create shape without the id, which is taken from the
+ * URL. Declared here rather than derived from `createQuizSchema`: zod refuses
+ * `.omit()` on a schema that already carries refinements, so the shapes are
+ * rebuilt from the same fields and refined last, exactly as above.
+ */
+export const replaceQuizSchema = z
+  .object({
+    ...quizFields,
+    questions: z.array(createQuestionSchema).min(QUIZ_MIN_QUESTIONS).max(QUIZ_MAX_QUESTIONS),
+  })
+  .refine(hasDistinctQuestionIds, hasDistinctQuestionIdsIssue)
+
+/**
  * Update payload — every field optional, but at least one present.
  *
  * The quiz id is absent on purpose: it is the slug the quiz is addressed by,

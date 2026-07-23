@@ -17,7 +17,8 @@
     "clean": "rm -rf dist coverage .turbo *.tsbuildinfo",
     "db:migrate": "tsx src/db/migrate.ts latest",
     "db:migrate:up": "tsx src/db/migrate.ts up",
-    "db:migrate:down": "tsx src/db/migrate.ts down"
+    "db:migrate:down": "tsx src/db/migrate.ts down",
+    "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
     "@quiz/shared": "workspace:*",

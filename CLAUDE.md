@@ -21,15 +21,36 @@ work has **not** started.
 
 ## Current phase guardrails
 
-Do **not** create, unless explicitly asked: business rules, entities
-(Quiz/Question/User/Attempt/…), authentication, use cases, domain controllers,
-DTOs, or database migrations. `src/db/schema.ts` declares an empty `Database`
-interface and `src/db/migrations/` is empty; `apps/web` serves one "it works"
-page; `apps/api` exposes one route.
+The quiz domain has started. The **quiz CRUD is built**: `quiz` + `question`
+tables (`src/db/migrations/20260723000000_create_quiz_tables.ts`, typed in
+`src/db/schema.ts`), the `src/modules/quiz` module (routes/service/repository/
+schema) behind `/quizzes`, and a JSON seed (`src/db/seeds/*.json`, run with
+`pnpm db:seed`). Contracts live in `@quiz/shared`.
 
-The test harness (Jest + Playwright) **is** in place — see [Testing](#testing).
-Its existing suites cover infrastructure only; don't write domain tests for
-features that don't exist yet.
+Still not built, so do **not** create unless explicitly asked: authentication
+and users; attempts, scoring or progress persistence; any `apps/web` domain UI
+(it still serves one "it works" page). Follow the established quiz module layout
+when extending the API, and never run migrations (see Rules above).
+
+The test harness (Jest + Playwright) covers the quiz module and the
+infrastructure. Don't write domain tests for features that don't exist yet.
+
+### The `/quizzes` surface
+
+| Method | Path           | Body (from `@quiz/shared`) | Success               |
+| ------ | -------------- | -------------------------- | --------------------- |
+| GET    | `/quizzes`     | —                          | 200 `QuizSummary[]`   |
+| GET    | `/quizzes/:id` | —                          | 200 `Quiz`            |
+| POST   | `/quizzes`     | `createQuizSchema`         | 201 `Quiz` + Location |
+| PUT    | `/quizzes/:id` | `replaceQuizSchema`        | 200 `Quiz`            |
+| PATCH  | `/quizzes/:id` | `updateQuizSchema`         | 200 `Quiz`            |
+| DELETE | `/quizzes/:id` | —                          | 204                   |
+
+Ids are optional on create: the service derives the quiz id from the title via
+`utils/slug.ts` and numbers questions `1..n`. Column names stay snake_case;
+`quiz.repository.ts`'s `toQuiz` / `toQuestionRows` are the camelCase boundary.
+Validation failures and domain errors are thrown as `HttpError`
+(`utils/http-error.ts`) and rendered by the existing `errorHandler`.
 
 ## Product scope (later phases — do not build yet)
 
@@ -79,13 +100,14 @@ src/app.ts        composition root — createApp() returns a wired, unstarted Ex
 src/routes/       routing table; index.ts mounts feature routers behind prefixes
 src/middleware/   cross-cutting middleware (logger, cors, json, db, errors), wired in middleware/index.ts
 src/lib/          env.ts (zod-validated config), logger.ts (pino), db.ts (Kysely instance)
-src/db/           schema.ts (Database types), migrate.ts (migration CLI), migrations/
+src/db/           schema.ts (Database types), migrate.ts + seed.ts (CLIs), migrations/, seeds/
 src/modules/      one folder per feature: <f>.routes.ts / .service.ts / .repository.ts / .schema.ts
 src/services/     external integrations not owned by a feature
-src/utils/        local helpers
+src/utils/        local helpers (http-error, slug, validation)
 ```
 
-Only route today: `GET /` → `{ "status": "ok" }` (`routes/health.route.ts`).
+Routes: `GET /` → `{ "status": "ok" }` (`routes/health.route.ts`), and the
+`/quizzes` CRUD from `modules/quiz` (see the guardrails section above).
 
 ### `apps/web`
 
@@ -206,6 +228,7 @@ pnpm dev                        # turbo: api (3333) + web (3000) together
 pnpm build | lint | typecheck | format
 pnpm --filter @quiz/api dev     # single workspace
 pnpm db:migrate | db:migrate:up | db:migrate:down   # Kysely migrations
+pnpm db:seed                    # load apps/api/src/db/seeds/*.json into the database
 docker compose up               # postgres + api + web
 docker compose up -d postgres   # just the database, for local dev
 
