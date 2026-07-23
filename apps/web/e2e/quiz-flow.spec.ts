@@ -32,8 +32,10 @@ test('plays a quiz from start screen through to results', async ({ page }) => {
 
   await page.goto('/quiz/demo')
 
-  // Start screen → begin the run.
-  await expect(page.getByRole('heading', { name: 'Demo Quiz' })).toBeVisible()
+  // Start screen → begin the run. (The quiz title sits in a shadcn CardTitle,
+  // which renders a div, not a heading — so match on exact text: a loose match
+  // would also hit the "A short demo quiz" description.)
+  await expect(page.getByText('Demo Quiz', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Start quiz' }).click()
 
   // Question 1 — answer correctly and see immediate feedback.
