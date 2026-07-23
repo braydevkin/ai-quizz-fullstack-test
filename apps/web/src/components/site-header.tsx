@@ -1,7 +1,8 @@
 'use client'
 
-import { LogOut, Sparkles, UserRound } from 'lucide-react'
+import { LayoutDashboard, LogOut, Sparkles, UserRound } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -21,10 +22,13 @@ export function SiteHeader() {
   return (
     <header className="border-b">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-6">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Sparkles className="text-primary size-5" />
-          <span>AI Dev Quiz</span>
-        </Link>
+        <div className="flex items-center gap-5">
+          <Link href="/" className="flex items-center gap-2 font-semibold">
+            <Sparkles className="text-primary size-5" />
+            <span>AI Dev Quiz</span>
+          </Link>
+          <NavLinks />
+        </div>
 
         <div className="flex items-center gap-2">
           <UserMenu />
@@ -32,6 +36,27 @@ export function SiteHeader() {
         </div>
       </div>
     </header>
+  )
+}
+
+/** Signed-in-only navigation. Hidden for anonymous visitors, who have no history. */
+function NavLinks() {
+  const { user } = useUser()
+  const pathname = usePathname()
+
+  if (!user) return null
+
+  const active = pathname === '/dashboard'
+
+  return (
+    <nav>
+      <Button variant={active ? 'secondary' : 'ghost'} size="sm" asChild>
+        <Link href="/dashboard">
+          <LayoutDashboard className="size-4" />
+          <span className="hidden sm:inline">Dashboard</span>
+        </Link>
+      </Button>
+    </nav>
   )
 }
 
