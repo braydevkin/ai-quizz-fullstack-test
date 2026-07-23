@@ -6,9 +6,10 @@ selection and workflow automation.
 
 > **Status: infrastructure phase.**
 > This repository currently contains the monorepo foundation only — no domain
-> logic, no quiz entities, no authentication, no tests. The web app serves a
-> single "it works" page and the API exposes a single health endpoint. Product
-> features are built on top of this base in the next phase.
+> logic, no quiz entities, no authentication. The test harness (Jest +
+> Playwright) is wired up, but only covers the infrastructure itself. The web
+> app serves a single "it works" page and the API exposes a single health
+> endpoint. Product features are built on top of this base in the next phase.
 
 ---
 
@@ -46,6 +47,7 @@ Workspaces are published under the `@quiz/*` scope: `@quiz/api`, `@quiz/web`,
 | Frontend        | Next.js 16 (App Router), React 19, TailwindCSS 4, shadcn/ui, Lucide, next-themes |
 | Backend         | Node.js 22, Express 5, zod 4, dotenv, pino (pino-http)                           |
 | Database        | PostgreSQL 17 via Kysely 0.29 (`pg` driver)                                      |
+| Testing         | Jest 30 (unit, both apps), Testing Library + jsdom, Playwright 1.61 (web e2e)    |
 | Quality         | ESLint 9 (flat config), Prettier 3, EditorConfig, Husky, lint-staged, Commitlint |
 | Containers      | Docker Compose, `node:22-alpine`, `postgres:17-alpine`                           |
 
@@ -63,7 +65,7 @@ Workspaces are published under the `@quiz/*` scope: `@quiz/api`, `@quiz/web`,
 
 ```bash
 nvm use                 # Node 22
-cp .env.example .env    # local defaults, already pointing at localhost:5432
+cp .env.example .env    # required — nothing has a built-in default
 pnpm install
 pnpm dev
 ```
@@ -127,23 +129,28 @@ default), not the in-network `http://api:3333`.
 
 ### Root
 
-| Script                                                  | Description                               |
-| ------------------------------------------------------- | ----------------------------------------- |
-| `pnpm dev`                                              | Run every app in watch mode (Turborepo)   |
-| `pnpm build`                                            | Build every workspace in dependency order |
-| `pnpm start`                                            | Run the production builds                 |
-| `pnpm lint`                                             | ESLint across all workspaces              |
-| `pnpm lint:fix`                                         | ESLint with `--fix`                       |
-| `pnpm typecheck`                                        | `tsc --noEmit` across all workspaces      |
-| `pnpm format`                                           | Prettier write                            |
-| `pnpm format:check`                                     | Prettier check (CI-friendly)              |
-| `pnpm clean`                                            | Remove build artefacts                    |
-| `pnpm db:migrate` / `db:migrate:up` / `db:migrate:down` | Kysely migrations for `@quiz/api`         |
-| `pnpm docker:up` / `docker:down` / `docker:reset`       | Compose shortcuts                         |
+| Script                                                  | Description                                |
+| ------------------------------------------------------- | ------------------------------------------ |
+| `pnpm dev`                                              | Run every app in watch mode (Turborepo)    |
+| `pnpm build`                                            | Build every workspace in dependency order  |
+| `pnpm start`                                            | Run the production builds                  |
+| `pnpm lint`                                             | ESLint across all workspaces               |
+| `pnpm lint:fix`                                         | ESLint with `--fix`                        |
+| `pnpm typecheck`                                        | `tsc --noEmit` across all workspaces       |
+| `pnpm format`                                           | Prettier write                             |
+| `pnpm format:check`                                     | Prettier check (CI-friendly)               |
+| `pnpm clean`                                            | Remove build artefacts                     |
+| `pnpm test`                                             | Jest unit tests across all workspaces      |
+| `pnpm test:coverage`                                    | Unit tests with coverage reports           |
+| `pnpm test:e2e` / `test:e2e:ui`                         | Playwright integration tests (`@quiz/web`) |
+| `pnpm test:e2e:install`                                 | Download the Playwright browsers (once)    |
+| `pnpm db:migrate` / `db:migrate:up` / `db:migrate:down` | Kysely migrations for `@quiz/api`          |
+| `pnpm docker:up` / `docker:down` / `docker:reset`       | Compose shortcuts                          |
 
 ### Per app (`apps/api`, `apps/web`)
 
-`dev`, `build`, `start`, `lint`, `typecheck` — plus `db:*` in the API.
+`dev`, `build`, `start`, `lint`, `typecheck`, `test`, `test:watch`,
+`test:coverage` — plus `db:*` in the API and `test:e2e*` in the web app.
 
 Target a single workspace with a filter:
 
@@ -210,6 +217,41 @@ import nodeConfig from '@quiz/config/eslint/node' // or /eslint/next
 export default nodeConfig
 ```
 
+```js
+// jest.config.mjs
+import { createNodeConfig } from '@quiz/config/jest/node' // or /jest/react
+export default createNodeConfig()
+```
+
+---
+
+## Testing
+
+| Layer                  | Tool                                            | Location                     |
+| ---------------------- | ----------------------------------------------- | ---------------------------- |
+| Unit (frontend)        | Jest + Testing Library + jsdom, via `next/jest` | `apps/web/src/**/*.test.tsx` |
+| Integration (frontend) | Playwright                                      | `apps/web/e2e/*.spec.ts`     |
+| Unit (backend)         | Jest + ts-jest (native ESM)                     | `apps/api/src/**/*.test.ts`  |
+
+Unit tests sit next to the code they cover; `testMatch` is scoped to `src/`, so
+Playwright specs never run under Jest and vice versa.
+
+```bash
+pnpm test                            # every unit suite, through Turborepo
+pnpm --filter @quiz/api test:watch   # one workspace, watch mode
+pnpm test:e2e:install                # once: download the browsers
+pnpm test:e2e                        # Playwright, boots the web app itself
+```
+
+Playwright's `webServer` starts `pnpm dev` on port 3000 and reuses an already
+running dev server, so local runs don't fight over the port. In CI it always
+starts its own, retries twice and records a trace on the first retry.
+
+The backend is unit-tested only, by design: no HTTP-level or database-backed
+suites. `apps/api/jest.setup.ts` assigns the environment tests run with, so
+`lib/env.ts` validates successfully and a developer's real `DATABASE_URL` is
+never picked up.
+
 ---
 
 ## Environment variables
@@ -217,19 +259,28 @@ export default nodeConfig
 Copy `.env.example` to `.env` at the repository root — it is read by the API in
 local development and by `docker compose`.
 
-| Variable                                                                | Purpose                                   | Default                                      |
-| ----------------------------------------------------------------------- | ----------------------------------------- | -------------------------------------------- |
-| `DATABASE_URL`                                                          | PostgreSQL connection string              | `postgresql://quiz:quiz@localhost:5432/quiz` |
-| `PORT`                                                                  | API port                                  | `3333`                                       |
-| `HOST`                                                                  | API bind address                          | `0.0.0.0`                                    |
-| `NODE_ENV`                                                              | `development` \| `test` \| `production`   | `development`                                |
-| `LOG_LEVEL`                                                             | pino level                                | `info`                                       |
-| `CORS_ORIGIN`                                                           | Allowed origins (comma-separated, or `*`) | `http://localhost:3000`                      |
-| `NEXT_PUBLIC_API_URL`                                                   | API base URL used by the browser          | `http://localhost:3333`                      |
-| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` / `POSTGRES_PORT` | Compose Postgres service                  | `quiz` / `quiz` / `quiz` / `5432`            |
+| Variable                                              | Purpose                                   | Default                 |
+| ----------------------------------------------------- | ----------------------------------------- | ----------------------- |
+| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | Compose Postgres credentials — required   | _none_                  |
+| `POSTGRES_PORT`                                       | Host port the compose Postgres publishes  | `5432`                  |
+| `DATABASE_URL`                                        | Connection string used by the API         | _none_                  |
+| `PORT`                                                | API port                                  | `3333`                  |
+| `HOST`                                                | API bind address                          | `0.0.0.0`               |
+| `NODE_ENV`                                            | `development` \| `test` \| `production`   | `development`           |
+| `LOG_LEVEL`                                           | pino level                                | `info`                  |
+| `CORS_ORIGIN`                                         | Allowed origins (comma-separated, or `*`) | `http://localhost:3000` |
+| `NEXT_PUBLIC_API_URL`                                 | API base URL used by the browser          | `http://localhost:3333` |
 
-The API validates its environment with zod at boot (`apps/api/src/lib/env.ts`)
-and fails fast with a readable message when something is missing.
+No credential carries a default. `docker-compose.yml` declares the three
+`POSTGRES_*` variables as required (`${VAR:?…}`), so compose stops with a
+readable error instead of falling back to a well-known user and password; the
+API container's `DATABASE_URL` is assembled from those same variables, so the
+credentials have a single source. The API validates its own environment with
+zod at boot (`apps/api/src/lib/env.ts`) and fails fast the same way.
+
+Everything in `.env.example` is throwaway local-development scaffolding. Real
+secrets belong in the environment (CI secrets, deploy platform, secret
+manager), never in a file in the repository.
 
 ---
 
