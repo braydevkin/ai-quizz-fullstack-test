@@ -26,6 +26,7 @@
     "db:migrate": "pnpm --filter @quiz/api db:migrate",
     "db:migrate:up": "pnpm --filter @quiz/api db:migrate:up",
     "db:migrate:down": "pnpm --filter @quiz/api db:migrate:down",
+    "db:seed": "pnpm --filter @quiz/api db:seed",
     "docker:up": "docker compose up",
     "docker:down": "docker compose down",
     "docker:reset": "docker compose down -v",

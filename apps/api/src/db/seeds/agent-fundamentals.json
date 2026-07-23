@@ -1,0 +1,67 @@
+{
+  "id": "agent-fundamentals",
+  "title": "Agent Fundamentals",
+  "description": "Test your knowledge of AI agent design and implementation",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the primary purpose of an AI agent?",
+      "options": [
+        "To replace human workers",
+        "To autonomously perform tasks and make decisions",
+        "To store large amounts of data",
+        "To create visual interfaces"
+      ],
+      "correctAnswer": 1,
+      "explanation": "AI agents are designed to autonomously perform tasks and make decisions based on their environment and goals."
+    },
+    {
+      "id": 2,
+      "question": "Which component is essential for an AI agent to learn from experience?",
+      "options": [
+        "A graphical user interface",
+        "A feedback mechanism",
+        "A database connection",
+        "A payment processor"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A feedback mechanism allows agents to learn from their actions and improve over time."
+    },
+    {
+      "id": 3,
+      "question": "What is 'context window' in relation to AI models?",
+      "options": [
+        "The browser window where AI runs",
+        "The maximum amount of text a model can process at once",
+        "The time period for model training",
+        "The user interface for model configuration"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The context window defines how much information an AI model can consider in a single interaction."
+    },
+    {
+      "id": 4,
+      "question": "Which strategy helps manage limited context windows?",
+      "options": [
+        "Adding more servers",
+        "Using larger fonts",
+        "Summarization and chunking",
+        "Increasing screen resolution"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Summarization and chunking help fit relevant information within context limits."
+    },
+    {
+      "id": 5,
+      "question": "What is 'prompt engineering'?",
+      "options": [
+        "Building physical AI hardware",
+        "Designing effective instructions for AI models",
+        "Creating user interfaces",
+        "Managing cloud infrastructure"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Prompt engineering is the practice of designing and optimizing inputs to get desired outputs from AI models."
+    }
+  ]
+}

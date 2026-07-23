@@ -6,6 +6,7 @@ import type {
   questionSchema,
   quizSchema,
   quizSummarySchema,
+  replaceQuizSchema,
   updateQuizSchema,
 } from '../schemas/quiz.schema.js'
 
@@ -22,4 +23,5 @@ export type QuizSummary = z.infer<typeof quizSummarySchema>
 
 export type CreateQuestionInput = z.infer<typeof createQuestionSchema>
 export type CreateQuizInput = z.infer<typeof createQuizSchema>
+export type ReplaceQuizInput = z.infer<typeof replaceQuizSchema>
 export type UpdateQuizInput = z.infer<typeof updateQuizSchema>
